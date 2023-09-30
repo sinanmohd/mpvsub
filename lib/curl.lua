@@ -21,8 +21,8 @@ local get = function (url, headr, args)
 	local cmd, fetch, scode
 
 	headr = util.table_merge(headr, def_headr)
-	cmd = 'curl -s --compressed --write-out %{http_code} '
-	cmd = cmd .. url .. gen_head(headr)
+	cmd = 'curl -s --compressed --write-out %{http_code} ' ..
+	      url .. gen_head(headr)
 	if args then
 		cmd = cmd .. ' ' .. args
 	end
