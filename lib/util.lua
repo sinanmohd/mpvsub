@@ -37,7 +37,7 @@ local zip_ext_first = function (zip, out)
 
 	rc = os.execute('unzip -qq ' .. zip .. ' -d ' .. dir)
 	srt = io.popen('find ' .. dir .. ' -type f -name *.srt'):read('*l')
-	os.rename(srt, out)
+	os.execute("mv '" .. srt .. "' '"  .. out .. "'")
 	os.remove(dir)
 
 	return rc
