@@ -33,4 +33,6 @@ test_subscene()
 
 if errs == 0  then
     print('ok: all tests ran successfully')
+else
+    os.exit(false)
 end
