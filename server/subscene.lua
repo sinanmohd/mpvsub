@@ -177,9 +177,10 @@ local sub_fetch = function(link, out)
 	return (hcode == 200) and zcode
 end
 
-local search = function (key, out)
-	local title, id, link, rc
+local search = function (path, out)
+	local title, id, link, rc, key
 
+	key = util.string_vid_path_to_name(path)
 	title, rc = title_search(key)
 	if not rc then
 		util.error('err: subscene: title_search')

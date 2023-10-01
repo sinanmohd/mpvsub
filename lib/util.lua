@@ -43,7 +43,7 @@ local zip_ext_first = function (zip, out)
 	return rc
 end
 
-local string_rm_vid_ext = function (str)
+local string_vid_path_to_name = function (str)
 	local extensions = {
 		"mkv",
 		"mp4",
@@ -56,6 +56,7 @@ local string_rm_vid_ext = function (str)
 		"3gp"
 	}
 
+	str = str:match('[^/]*$')
 	for _, ext in ipairs(extensions) do
 		str = str:gsub('.' .. ext, '')
 	end
@@ -126,7 +127,7 @@ return {
 	table_print = table_print,
 	table_match_or_any = table_match_or_any,
 	zip_ext_first = zip_ext_first,
-	string_rm_vid_ext = string_rm_vid_ext,
+	string_vid_path_to_name = string_vid_path_to_name,
 	opensubtitles_hash = opensubtitles_hash,
 	error = error,
 }

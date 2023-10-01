@@ -41,7 +41,7 @@ local sub_needed = function ()
 end
 
 local sub_setup = function ()
-    local out, name
+    local out, name, path
 
     mp.osd_message('fetching subtitle')
 
@@ -54,11 +54,11 @@ local sub_setup = function ()
     end
 
     mkdir(out)
-    name = mp.get_property_native('path'):match('[^/]*$')
-    name = util.string_rm_vid_ext(name)
+    path = mp.get_property_native('path')
+    name = util.string_vid_path_to_name(path)
     out = out .. '/' .. name .. '.srt'
 
-    if subscene.search(name, out) then
+    if subscene.search(path, out) then
         mp.commandv('rescan_external_files')
         mp.osd_message('fetch success')
     else
