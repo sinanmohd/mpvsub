@@ -1,6 +1,7 @@
 local mutil = require 'mp.utils'
 local util = require 'lib/util'
 local subscene = require 'server/subscene'
+local opensubtitles = require 'server/opensubtitles'
 
 local mkdir = function (path)
     local info = mutil.file_info(path)
@@ -41,7 +42,7 @@ local sub_needed = function ()
 end
 
 local sub_setup = function ()
-    local out, name, path
+    local out, name, path, rc
 
     mp.osd_message('fetching subtitle')
 
@@ -58,8 +59,16 @@ local sub_setup = function ()
     name = util.string_vid_path_to_name(path)
     out = out .. '/' .. name .. '.srt'
 
-    if subscene.search(path, out) then
+    if not path:find('https?://') then
+        rc = opensubtitles.search(path, out)
+    end
+    if not rc then
+        rc = subscene.search(path, out)
+    end
+
+    if rc then
         mp.commandv('rescan_external_files')
+        mp.set_property('sid', 1)
         mp.osd_message('fetch success')
     else
         mp.osd_message('fetch failure')
