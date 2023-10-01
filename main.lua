@@ -67,11 +67,9 @@ local sub_setup = function ()
 end
 
 local file_listener = function ()
-    if not sub_needed() then
-        return
+    if sub_needed() then
+        sub_setup()
     end
-
-    sub_setup()
 end
 
 mp.register_event('file-loaded', file_listener)
