@@ -5,24 +5,19 @@ local util = require 'lib/util'
 
 local errs = 0
 
-local file_hash_verify = function (path, sha256)
-	local newhash = io.popen('sha256sum ' .. path):read(64)
-	return (newhash == sha256)
-end
-
 local test_subscene = function ()
-    local out, sha256, name
+    local out, ohash, name
 
     out = os.tmpname()
     name = 'Fight Club (1999) (1080p BluRay x265 10bit Tigole) [QxR].mp4'
-    sha256 = 'fe88e2c1345a7daed82cb570952c13fae6a6867449f7dd5e719ea0a0c1e2e242'
+    ohash = 'ffec132e13e08f4c'
 
     if not subscene.search(name, out) then
         util.error('subscene: fetch failed')
         errs = errs + 1
     end
 
-    if not file_hash_verify(out, sha256) then
+    if ohash ~= util.opensubtitles_hash(out) then
         util.error('subscene: hash mismatch')
         errs = errs + 1
     end
