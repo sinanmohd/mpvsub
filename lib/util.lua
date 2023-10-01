@@ -63,10 +63,20 @@ local string_rm_vid_ext = function (str)
 	return str
 end
 
+local error = function (str)
+	str = 'error: ' .. str
+	if mp then
+		mp.msg.warn(str)
+	else
+		print(str)
+	end
+end
+
 return {
 	table_merge = table_merge,
 	table_print = table_print,
 	table_match_or_any = table_match_or_any,
 	zip_ext_first = zip_ext_first,
 	string_rm_vid_ext = string_rm_vid_ext,
+	error = error,
 }

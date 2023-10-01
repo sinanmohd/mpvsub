@@ -183,22 +183,30 @@ local search = function (key, out)
 	key = util.string_rm_vid_ext(key)
 	title, rc = title_search(key)
 	if not rc then
-		return nil
+		util.error('err: subscene: title_search')
+		return false
 	end
 
 	id = id_fetch(title)
 	id = util.table_match_or_any(id, key)
 	if not id then
-		return nil
+		util.error('subscene: table_match_or_any')
+		return false
 	end
 
 	link, rc = link_fetch(id)
 	if not rc then
-		return nil
+		util.error('subscene: link_fetch')
+		return false
 	end
 
 	rc = sub_fetch(link, out)
-	return rc
+	if not rc then
+		util.error('subscene: sub_fetch')
+		return false
+	end
+
+	return true
 end
 
 return {
