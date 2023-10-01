@@ -42,7 +42,7 @@ local sub_setup = function ()
     if out then
         out = out:gsub('^~/', os.getenv('HOME') .. '/')
     else
-        out = os.getenv('HOME') .. '.local/share/subs'
+        out = os.getenv('HOME') .. '/.local/share/mpv/subs'
         mp.set_property('sub-file-paths', out)
     end
 
