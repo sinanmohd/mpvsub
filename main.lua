@@ -36,7 +36,7 @@ end
 local sub_setup = function ()
     local out, name
 
-    mp.osd_message('fetching subtitles')
+    mp.osd_message('fetching subtitle')
 
     out = mp.get_property_native('sub-file-paths')[1]
     if out then
