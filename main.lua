@@ -1,10 +1,6 @@
 local mutil = require 'mp.utils'
 local subscene = require 'server/subscene'
 
-local notify = function (str, sec)
-    mp.osd_message(str, sec)
-end
-
 local mkdir = function (path)
     local info = mutil.file_info(path)
     if info and not info.is_dir then
@@ -40,7 +36,7 @@ end
 local sub_setup = function ()
     local out, name
 
-    notify('fetching subtitles')
+    mp.osd_message('fetching subtitles')
 
     out = mp.get_property_native('sub-file-paths')[1]
     if out then
@@ -56,9 +52,9 @@ local sub_setup = function ()
 
     if subscene.search(name, out) then
         mp.commandv('rescan_external_files')
-        notify('fetch success')
+        mp.osd_message('fetch success')
     else
-        notify('fetch failure')
+        mp.osd_message('fetch failure')
     end
 end
 
