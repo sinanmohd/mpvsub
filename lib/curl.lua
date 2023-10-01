@@ -28,8 +28,8 @@ local get = function (url, headr, args)
 	end
 
 	fetch = io.popen(cmd):read('*all')
-	scode = string.match(fetch, '%d*$')
-	fetch = string.gsub(fetch, '%s*%d*$', '')
+	scode = fetch:match('%d*$')
+	fetch = fetch:gsub('%s*%d*$', '')
 
 	return fetch, tonumber(scode)
 end
