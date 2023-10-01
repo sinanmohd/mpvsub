@@ -151,7 +151,10 @@ local link_fetch = function (id)
 		tries = tries + 1
 	until hcode == 200 or tries > retries
 
-	link = domain .. fetch:match('/subtitles/' .. language .. '%-text/[^"]*')
+	if hcode == 200 then
+		link = domain .. fetch:match('/subtitles/[%l_-]*%-text/[^"]*')
+	end
+
 	return link, (hcode == 200)
 end
 
@@ -166,7 +169,9 @@ local sub_fetch = function(link, out)
 		tries = tries + 1
 	until hcode == 200 or tries > retries
 
-	zcode = util.zip_ext_first(zip, out)
+	if hcode == 200 then
+		zcode = util.zip_ext_first(zip, out)
+	end
 	os.remove(zip)
 
 	return (hcode == 200) and zcode
