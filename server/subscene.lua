@@ -158,25 +158,6 @@ local link_fetch = function (id)
 	return link, (hcode == 200)
 end
 
-local sub_fetch = function(link, out)
-	local tries, hcode, zip, zcode
-
-	tries = 0
-	zip = os.tmpname()
-
-	repeat
-		_, hcode = curl.get(link, headr, '-o ' .. zip)
-		tries = tries + 1
-	until hcode == 200 or tries > retries
-
-	if hcode == 200 then
-		zcode = util.zip_ext_first(zip, out)
-	end
-	os.remove(zip)
-
-	return (hcode == 200) and zcode
-end
-
 local search = function (path, out)
 	local title, id, link, rc, key
 
@@ -200,7 +181,7 @@ local search = function (path, out)
 		return false
 	end
 
-	rc = sub_fetch(link, out)
+	rc = curl.zip_to_local_file(link, headr, out, retries)
 	if not rc then
 		util.error('subscene: sub_fetch')
 		return false
@@ -213,6 +194,5 @@ return {
 	title_search = title_search,
 	id_fetch = id_fetch,
 	link_fetch = link_fetch,
-	sub_fetch = sub_fetch,
 	search = search,
 }

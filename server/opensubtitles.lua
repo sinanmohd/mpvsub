@@ -134,32 +134,13 @@ local search_ohash = function (ohash)
 	end
 end
 
-local sub_fetch = function(link, out)
-	local tries, hcode, zip, zcode
-
-	tries = 0
-	zip = os.tmpname()
-
-	repeat
-		_, hcode = curl.get(link, nil, '-o ' .. zip)
-		tries = tries + 1
-	until hcode == 200 or tries > retries
-
-	if hcode == 200 then
-		zcode = util.zip_ext_first(zip, out)
-	end
-	os.remove(zip)
-
-	return (hcode == 200) and zcode
-end
-
 local search = function (path, out)
 	local ohash, link
 
 	ohash = util.opensubtitles_hash(path)
 	link = search_ohash(ohash)
 	if link then
-		return sub_fetch(link, out)
+		return curl.zip_to_local_file(link, nil, out, retries)
 	end
 end
 
