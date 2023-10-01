@@ -54,7 +54,7 @@ local sub_setup = function ()
     end
 
     mkdir(out)
-    name = mp.get_property_native('path')
+    name = mp.get_property_native('path'):match('[^/]*$')
     name = util.string_rm_vid_ext(name)
     out = out .. '/' .. name .. '.srt'
 
