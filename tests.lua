@@ -6,18 +6,19 @@ local util = require 'lib/util'
 local errs = 0
 
 local test_subscene = function ()
-    local out, ohash, name
+    local out, ohash, name, rc
 
     out = os.tmpname()
-    name = 'Fight Club (1999) (1080p BluRay x265 10bit Tigole) [QxR].mp4'
+    name = util.string_rm_vid_ext('Fight Club (1999) (1080p BluRay x265 10bit Tigole) [QxR].mp4')
     ohash = 'ffec132e13e08f4c'
 
-    if not subscene.search(name, out) then
+    rc = subscene.search(name, out)
+    if not rc then
         util.error('subscene: fetch failed')
         errs = errs + 1
     end
 
-    if ohash ~= util.opensubtitles_hash(out) then
+    if rc and ohash ~= util.opensubtitles_hash(out) then
         util.error('subscene: hash mismatch')
         errs = errs + 1
     end
