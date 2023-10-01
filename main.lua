@@ -12,7 +12,13 @@ local mkdir = function (path)
 end
 
 local sub_needed = function ()
-    local duration, isvideo
+    local duration, isvideo, name
+
+    name = mp.get_property_native('path')
+    if name:find('https?://www.youtube.com/') or
+       name:find('https?://youtu.be/') then
+        return false
+    end
 
     duration = tonumber(mp.get_property('duration'))
     if duration < 900 then -- duration is less than 15 minutes
