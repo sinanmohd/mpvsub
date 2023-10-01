@@ -1,4 +1,5 @@
 local mutil = require 'mp.utils'
+local util = require 'lib/util'
 local subscene = require 'server/subscene'
 
 local mkdir = function (path)
@@ -48,6 +49,7 @@ local sub_setup = function ()
 
     mkdir(out)
     name = mp.get_property_native('path')
+    name = util.string_rm_vid_ext(name)
     out = out .. '/' .. name .. '.srt'
 
     if subscene.search(name, out) then

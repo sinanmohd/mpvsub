@@ -180,7 +180,6 @@ end
 local search = function (key, out)
 	local title, id, link, rc
 
-	key = util.string_rm_vid_ext(key)
 	title, rc = title_search(key)
 	if not rc then
 		util.error('err: subscene: title_search')
