@@ -99,7 +99,7 @@ local title_search = function (key)
 	repeat
 		fetch, hcode = curl.get(url, headr, args)
 		tries = tries + 1
-	until hcode == 200 or tries > retries
+	until hcode == 200 or not hcode or tries > retries
 
 	title = fetch:match('href="/subtitles/[^"]*')
 	if title then
@@ -116,7 +116,7 @@ local id_fetch = function (title)
 	repeat
 		fetch, hcode = curl.get(title, headr, nil)
 		tries = tries + 1
-	until hcode == 200 or tries > retries
+	until hcode == 200 or not hcode or tries > retries
 
 	tab = {}
 	iter = fetch:gmatch('[^\n\r]+')
@@ -149,7 +149,7 @@ local link_fetch = function (id)
 	repeat
 		fetch, hcode = curl.get(id, headr, nil)
 		tries = tries + 1
-	until hcode == 200 or tries > retries
+	until hcode == 200 or not hcode or tries > retries
 
 	if hcode == 200 then
 		link = domain .. fetch:match('/subtitles/[%l_-]*%-text/[^"]*')

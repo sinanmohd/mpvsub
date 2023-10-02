@@ -36,7 +36,10 @@ local get = function (url, headr, args)
 	args = util.array_merge(args, head_to_args(headr))
 
 	fetch = util.run(args)
-	hcode = fetch:match('%d*$') or 000
+	-- hcode can be nil, it means curl was't able to fulfill the http request, either
+	-- because curl package is broken or mpv killed it prematurely. we can exit
+	-- out of retry loop early if hcode is nil since there's no point in retrying
+	hcode = fetch:match('%d*$')
 	fetch = fetch:gsub('%s*%d*$', '')
 
 	return fetch, tonumber(hcode)

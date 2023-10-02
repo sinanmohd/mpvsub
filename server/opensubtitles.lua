@@ -122,7 +122,7 @@ local search_ohash = function (ohash)
 	repeat
 		fetch, hcode = curl.get(url, nil, nil)
 		tries = tries + 1
-	until hcode == 200 or tries > retries
+	until hcode == 200 or not hcode or tries > retries
 
 	id = fetch:match('/en/subtitleserve/sub/[^\n]*\n[^\n]*iduser%-0')
 	if id then
