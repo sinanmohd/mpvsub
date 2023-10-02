@@ -46,7 +46,7 @@ local get = function (url, headr, args)
 end
 
 local zip_link_to_file = function (url, headr, out, retries)
-	local tries, hcode, zip, zcode
+	local tries, hcode, zip, rc
 
 	tries = 0
 	zip = os.tmpname()
@@ -54,14 +54,19 @@ local zip_link_to_file = function (url, headr, out, retries)
 	repeat
 		_, hcode = get(url, headr, { '-o'.. zip })
 		tries = tries + 1
-	until hcode == 200 or tries > retries
+	until hcode == 200 or not hcode or tries > retries
+	rc = (hcode == 200)
 
-	if hcode == 200 then
-		zcode = util.zip_ext_first(zip, out)
+	if rc then
+		rc = util.zip_ext_first(zip, out)
 	end
 	os.remove(zip)
 
-	return (hcode == 200) and zcode
+	if hcode and not rc then
+		util.error('curl: zip_link_to_file')
+	end
+
+	return rc
 end
 
 return {

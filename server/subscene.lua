@@ -90,7 +90,7 @@ local headr = {['Cookie'] = 'LanguageFilter=' ..languages[language]}
 local retries = 10
 
 local title_search = function (key)
-	local url, args, fetch, hcode, tries, title
+	local url, args, fetch, hcode, tries, title, rc
 
 	url = domain .. '/subtitles/searchbytitle'
 	args = { '--data-raw',  'query=' .. key }
@@ -105,8 +105,13 @@ local title_search = function (key)
 	if title then
 		title = title:gsub('href="',  domain)
 	end
+	rc = (hcode == 200 and title ~= nil)
 
-	return title, (hcode == 200 and title ~= nil)
+	if hcode and not rc then
+		util.error('subscene: title_search')
+	end
+
+	return title, rc
 end
 
 local id_fetch = function (title)
@@ -139,23 +144,32 @@ local id_fetch = function (title)
 		end
 	end
 
+	if hcode and tab == {} then
+		util.error('subscene: id_fetch')
+	end
+
 	return tab
 end
 
 local link_fetch = function (id)
-	local fetch, tries, hcode, link
+	local fetch, tries, hcode, link, rc
 
 	tries = 0
 	repeat
 		fetch, hcode = curl.get(id, headr, nil)
 		tries = tries + 1
 	until hcode == 200 or not hcode or tries > retries
+	rc = hcode == 200
 
-	if hcode == 200 then
+	if rc then
 		link = domain .. fetch:match('/subtitles/[%l_-]*%-text/[^"]*')
 	end
 
-	return link, (hcode == 200)
+	if hcode and not rc then
+		util.error('subscene: link_fetch')
+	end
+
+	return link, rc
 end
 
 local search = function (path, out)
@@ -164,26 +178,22 @@ local search = function (path, out)
 	key = util.string_vid_path_to_name(path)
 	title, rc = title_search(key)
 	if not rc then
-		util.error('subscene: title_search')
 		return false
 	end
 
 	id = id_fetch(title)
 	id = util.table_match_or_any(id, key)
 	if not id then
-		util.error('subscene: table_match_or_any')
 		return false
 	end
 
 	link, rc = link_fetch(id)
 	if not rc then
-		util.error('subscene: link_fetch')
 		return false
 	end
 
 	rc = curl.zip_link_to_file(link, headr, out, retries)
 	if not rc then
-		util.error('subscene: zip_link_to_file')
 		return false
 	end
 

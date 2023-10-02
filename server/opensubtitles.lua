@@ -129,6 +129,10 @@ local search_ohash = function (ohash)
 		id = id:match('/en/subtitleserve/sub/%d*')
 	end
 
+	if hcode and not id then
+		util.error('opensubtitles: search_ohash')
+	end
+
 	if id then
 		return domain .. id
 	end
