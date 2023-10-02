@@ -161,8 +161,10 @@ local run = function (args)
 			capture_stdout = true,
 			args = args,
 		})
-		stdout = cmd.stdout
-		rc = (cmd.status >= 0)
+		if cmd then
+			stdout = cmd.stdout
+			rc = (cmd.status >= 0)
+		end
 	else
 		cmd = io.popen(table_to_cmd(args))
 		if cmd then
@@ -172,7 +174,7 @@ local run = function (args)
 		end
 	end
 
-	return stdout, rc
+	return stdout or "", rc
 end
 
 return {
