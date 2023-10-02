@@ -164,7 +164,7 @@ local search = function (path, out)
 	key = util.string_vid_path_to_name(path)
 	title, rc = title_search(key)
 	if not rc then
-		util.error('err: subscene: title_search')
+		util.error('subscene: title_search')
 		return false
 	end
 
