@@ -1,14 +1,18 @@
 #!/usr/bin/env lua
 
 local table_merge = function (t1, t2)
+	local t = {}
 	t1 = t1 or {}
 	t2 = t2 or {}
 
+	for k, v in pairs(t1) do
+		t[k] = v
+	end
 	for k, v in pairs(t2) do
-		t1[k] = v
+		t[k] = v
 	end
 
-	return t1
+	return t
 end
 
 local table_print = function (t)
