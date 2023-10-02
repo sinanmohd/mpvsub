@@ -1,5 +1,41 @@
 #!/usr/bin/env lua
 
+local table_to_cmd = function (t)
+	local str = ""
+
+	for _, v in ipairs(t) do
+		v = v:gsub("'", "\'")
+		str = str .. " '" .. v .. "' "
+	end
+
+	return str
+end
+
+local run = function (args)
+	local sig, rc, stdout, cmd
+
+	if mp then
+		cmd = mp.command_native({
+			name = 'subprocess',
+			capture_stdout = true,
+			args = args,
+		})
+		if cmd then
+			stdout = cmd.stdout
+			rc = (cmd.status >= 0)
+		end
+	else
+		cmd = io.popen(table_to_cmd(args))
+		if cmd then
+			stdout = cmd:read('*all')
+			_, sig, rc = cmd:close()
+			rc = (sig == 'signal') or (sig == 'exit' and rc == 0)
+		end
+	end
+
+	return stdout or "", rc
+end
+
 local table_merge = function (t1, t2)
 	local t = {}
 	t1 = t1 or {}
@@ -48,15 +84,15 @@ local table_match_or_any = function (t, key)
 end
 
 local zip_ext_first = function (zip, out)
-	local dir, rc, srt
+	local dir, rc, srt, findcmd
 
 	dir = os.tmpname()
 	os.remove(dir)
-	os.execute('mkdir -p ' .. dir)
+	findcmd = { 'find', dir, '-type', 'f', '-name', '*.srt' }
 
-	rc = os.execute('unzip -qq ' .. zip .. ' -d ' .. dir)
-	srt = io.popen('find ' .. dir .. ' -type f -name *.srt'):read('*l')
-	os.execute("mv '" .. srt .. "' '"  .. out .. "'")
+	_, rc = run({ 'unzip',  '-qq',  zip, '-d',  dir })
+	srt = run(findcmd):match('[^\n]*')
+	run({ 'mv', srt, out })
 	os.remove(dir)
 
 	return rc
@@ -139,42 +175,6 @@ local opensubtitles_hash = function (fileName)
 
         fil:close()
         return string.format("%08x%08x", hi,lo), size
-end
-
-local table_to_cmd = function (t)
-	local str = ""
-
-	for _, v in ipairs(t) do
-		v = v:gsub("'", "\'")
-		str = str .. " '" .. v .. "' "
-	end
-
-	return str
-end
-
-local run = function (args)
-	local sig, rc, stdout, cmd
-
-	if mp then
-		cmd = mp.command_native({
-			name = 'subprocess',
-			capture_stdout = true,
-			args = args,
-		})
-		if cmd then
-			stdout = cmd.stdout
-			rc = (cmd.status >= 0)
-		end
-	else
-		cmd = io.popen(table_to_cmd(args))
-		if cmd then
-			stdout = cmd:read('*all')
-			_, sig, rc = cmd:close()
-			rc = (sig == 'signal') or (sig == 'exit' and rc == 0)
-		end
-	end
-
-	return stdout or "", rc
 end
 
 return {

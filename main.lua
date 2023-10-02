@@ -9,7 +9,7 @@ local mkdir = function (path)
         os.remove(path)
     end
 
-    return os.execute('mkdir -p ' .. path)
+    return util.run({ 'mkdir', '-p', path })
 end
 
 local sub_needed = function ()
