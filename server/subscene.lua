@@ -93,7 +93,7 @@ local title_search = function (key)
 	local url, args, fetch, hcode, tries, title
 
 	url = domain .. '/subtitles/searchbytitle'
-	args = "--data-raw query='" .. key .. "' "
+	args = { '--data-raw',  'query=' .. key }
 
 	tries = 0
 	repeat

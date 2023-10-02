@@ -7,28 +7,36 @@ local def_headr = {
 	['Accept-Encoding'] = 'gzip, deflate, br'
 }
 
-local gen_head = function (t)
-	local heads = ' '
+local head_to_args = function (t)
+	local args = {}
 
 	for k, v in pairs(t) do
-		heads = heads .. "-H '" .. k .. ": " .. v .. "' "
+		args[#args + 1] = '-H' .. k .. ": " .. v
 	end
 
-	return heads
+	return args
 end
 
 local get = function (url, headr, args)
-	local cmd, fetch, scode
+	local fetch, scode, def_args
 
-	headr = util.table_merge(headr, def_headr)
-	cmd = "curl -s --compressed --write-out %{http_code} '" ..
-	       url .. "' --globoff --location " .. gen_head(headr)
-	if args then
-		cmd = cmd .. ' ' .. args
-	end
+	def_args = {
+		'curl',
+		'--silent',
+		'--compressed',
+		'--write-out',
+		'%{http_code}',
+		'--globoff',
+		'--location',
+		url,
+	}
 
-	fetch = io.popen(cmd):read('*all')
-	scode = fetch:match('%d*$')
+	args = util.array_merge(def_args, args)
+	headr = util.table_merge(def_headr, headr)
+	args = util.array_merge(args, head_to_args(headr))
+
+	fetch = util.run(args)
+	scode = fetch:match('%d*$') or 000
 	fetch = fetch:gsub('%s*%d*$', '')
 
 	return fetch, tonumber(scode)
@@ -41,7 +49,7 @@ local zip_to_local_file = function (url, headr, out, retries)
 	zip = os.tmpname()
 
 	repeat
-		_, hcode = get(url, headr, '-o ' .. zip)
+		_, hcode = get(url, headr, { '-o'.. zip })
 		tries = tries + 1
 	until hcode == 200 or tries > retries
 
