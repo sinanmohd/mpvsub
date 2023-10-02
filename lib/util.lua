@@ -15,6 +15,21 @@ local table_merge = function (t1, t2)
 	return t
 end
 
+local array_merge = function (a1, a2)
+	local a = {}
+	a1 = a1 or {}
+	a2 = a2 or {}
+
+	for _, v in ipairs(a1) do
+		a[#a + 1] = v
+	end
+	for _, v in ipairs(a2) do
+		a[#a + 1] = v
+	end
+
+	return a
+end
+
 local table_print = function (t)
 	for k, v in pairs(t) do
 		print( '|'.. k .. '=' .. v .. '|')
@@ -164,6 +179,7 @@ return {
 	table_merge = table_merge,
 	table_print = table_print,
 	table_match_or_any = table_match_or_any,
+	array_merge = array_merge,
 	zip_ext_first = zip_ext_first,
 	string_vid_path_to_name = string_vid_path_to_name,
 	opensubtitles_hash = opensubtitles_hash,
