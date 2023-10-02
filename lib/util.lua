@@ -122,6 +122,40 @@ local opensubtitles_hash = function (fileName)
         return string.format("%08x%08x", hi,lo), size
 end
 
+local table_to_cmd = function (t)
+	local str = ""
+
+	for _, v in ipairs(t) do
+		v = v:gsub("'", "\'")
+		str = str .. " '" .. v .. "' "
+	end
+
+	return str
+end
+
+local run = function (args)
+	local sig, rc, stdout, cmd
+
+	if mp then
+		cmd = mp.command_native({
+			name = 'subprocess',
+			capture_stdout = true,
+			args = args,
+		})
+		stdout = cmd.stdout
+		rc = (cmd.status >= 0)
+	else
+		cmd = io.popen(table_to_cmd(args))
+		if cmd then
+			stdout = cmd:read('*all')
+			_, sig, rc = cmd:close()
+			rc = (sig == 'signal') or (sig == 'exit' and rc == 0)
+		end
+	end
+
+	return stdout, rc
+end
+
 return {
 	table_merge = table_merge,
 	table_print = table_print,
@@ -129,5 +163,6 @@ return {
 	zip_ext_first = zip_ext_first,
 	string_vid_path_to_name = string_vid_path_to_name,
 	opensubtitles_hash = opensubtitles_hash,
+	run = run,
 	error = error,
 }
