@@ -1,4 +1,4 @@
-**MpvSUB: /comfy/ subtitles for Mpv without api keys or Python**
+**MpvSUB: /comfy/ subtitles for mpv without api keys or python**
 ----------------------------------------------------------------
 
 mpvsub automatically fetches subtitles "when needed" with zero interactions
