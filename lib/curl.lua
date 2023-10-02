@@ -45,7 +45,7 @@ local get = function (url, headr, args)
 	return fetch, tonumber(hcode)
 end
 
-local zip_to_local_file = function (url, headr, out, retries)
+local zip_link_to_file = function (url, headr, out, retries)
 	local tries, hcode, zip, zcode
 
 	tries = 0
@@ -66,5 +66,5 @@ end
 
 return {
 	get = get,
-	zip_to_local_file = zip_to_local_file,
+	zip_link_to_file = zip_link_to_file,
 }

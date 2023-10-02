@@ -140,7 +140,7 @@ local search = function (path, out)
 	ohash = util.opensubtitles_hash(path)
 	link = search_ohash(ohash)
 	if link then
-		return curl.zip_to_local_file(link, nil, out, retries)
+		return curl.zip_link_to_file(link, nil, out, retries)
 	end
 end
 

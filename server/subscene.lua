@@ -181,9 +181,9 @@ local search = function (path, out)
 		return false
 	end
 
-	rc = curl.zip_to_local_file(link, headr, out, retries)
+	rc = curl.zip_link_to_file(link, headr, out, retries)
 	if not rc then
-		util.error('subscene: sub_fetch')
+		util.error('subscene: zip_link_to_file')
 		return false
 	end
 
