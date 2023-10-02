@@ -18,7 +18,7 @@ local head_to_args = function (t)
 end
 
 local get = function (url, headr, args)
-	local fetch, scode, def_args
+	local fetch, hcode, def_args
 
 	def_args = {
 		'curl',
@@ -36,10 +36,10 @@ local get = function (url, headr, args)
 	args = util.array_merge(args, head_to_args(headr))
 
 	fetch = util.run(args)
-	scode = fetch:match('%d*$') or 000
+	hcode = fetch:match('%d*$') or 000
 	fetch = fetch:gsub('%s*%d*$', '')
 
-	return fetch, tonumber(scode)
+	return fetch, tonumber(hcode)
 end
 
 local zip_to_local_file = function (url, headr, out, retries)
