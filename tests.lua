@@ -32,7 +32,11 @@ local test_opensubtitles = function ()
 
     ohash = '395787dbe5b42001'
     id = '5449593'
-    new_id = opensubtitles.search_ohash(ohash):match('%d*$')
+    new_id = opensubtitles.search_ohash(ohash)
+    if new_id then
+        new_id = new_id:match('%d*$')
+    end
+
     if id ~= new_id then
         util.error('opensubtitles: id mismatch')
         errs = errs + 1
