@@ -111,18 +111,14 @@ local languages = {
 
 local language = 'english'
 local domain = 'https://www.opensubtitles.org'
-local retries = 10
+local tries = 10
 
 local search_ohash = function (ohash)
-	local fetch, tries, hcode, url, id
+	local fetch, hcode, url, id
 
 	url = domain .. '/en' .. '/search/sublanguageid-' ..
 	      languages[language] .. '/moviehash-' .. ohash
-	tries = 0
-	repeat
-		fetch, hcode = curl.get(url, nil, nil)
-		tries = tries + 1
-	until hcode == 200 or not hcode or tries > retries
+	fetch, hcode = curl.get(url, nil, nil, tries)
 
 	id = fetch:match('/en/subtitleserve/sub/[^\n]*\n[^\n]*iduser%-0')
 	if id then
@@ -144,7 +140,7 @@ local search = function (path, out)
 	ohash = util.opensubtitles_hash(path)
 	link = search_ohash(ohash)
 	if link then
-		return curl.zip_link_to_file(link, nil, out, retries)
+		return curl.zip_link_to_file(link, nil, out, tries)
 	end
 end
 

@@ -87,21 +87,17 @@ local languages = {
 local language = 'english'
 local domain = 'https://subscene.com'
 local headr = {['Cookie'] = 'LanguageFilter=' ..languages[language]}
-local retries = 10
+local tries = 10
 
 local title_search = function (key)
-	local url, args, fetch, hcode, tries, title, rc
+	local url, args, fetch, hcode, title, rc
 
 	url = domain .. '/subtitles/searchbytitle'
 	args = { '--data-raw',  'query=' .. key }
 
-	tries = 0
-	repeat
-		fetch, hcode = curl.get(url, headr, args)
-		tries = tries + 1
-	until hcode == 200 or not hcode or tries > retries
-
+	fetch, hcode = curl.get(url, headr, args, tries)
 	title = fetch:match('href="/subtitles/[^"]*')
+
 	if title then
 		title = title:gsub('href="',  domain)
 	end
@@ -115,13 +111,9 @@ local title_search = function (key)
 end
 
 local id_fetch = function (title)
-	local tab, id, name, fetch, hcode, tries, iter, line
+	local tab, id, name, fetch, hcode, iter, line
 
-	tries = 0
-	repeat
-		fetch, hcode = curl.get(title, headr, nil)
-		tries = tries + 1
-	until hcode == 200 or not hcode or tries > retries
+	fetch, hcode = curl.get(title, headr, nil, tries)
 
 	tab = {}
 	iter = fetch:gmatch('[^\n\r]+')
@@ -152,15 +144,11 @@ local id_fetch = function (title)
 end
 
 local link_fetch = function (id)
-	local fetch, tries, hcode, link, rc
+	local fetch, hcode, link, rc
 
-	tries = 0
-	repeat
-		fetch, hcode = curl.get(id, headr, nil)
-		tries = tries + 1
-	until hcode == 200 or not hcode or tries > retries
-	rc = hcode == 200
+	fetch, hcode = curl.get(id, headr, nil, tries)
 
+	rc = (hcode == 200)
 	if rc then
 		link = domain .. fetch:match('/subtitles/[%l_-]*%-text/[^"]*')
 	end
@@ -192,7 +180,7 @@ local search = function (path, out)
 		return false
 	end
 
-	rc = curl.zip_link_to_file(link, headr, out, retries)
+	rc = curl.zip_link_to_file(link, headr, out, tries)
 	if not rc then
 		return false
 	end
