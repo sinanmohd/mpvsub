@@ -160,10 +160,10 @@ local link_fetch = function (id)
 	return link, rc
 end
 
-local search = function (path, out)
+local search = function (path, out, name)
 	local title, id, link, rc, key
 
-	key = util.string_vid_path_to_name(path)
+	key = name or util.string_vid_path_to_name(path)
 	title, rc = title_search(key)
 	if not rc then
 		return false
