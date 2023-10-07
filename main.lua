@@ -58,11 +58,11 @@ local sub_setup = function ()
     path = mp.get_property_native('path')
     out = out .. '/' .. util.string_vid_path_to_name(path) .. '.srt'
 
-    if path:find('https?://') then
+    if not util.file_exists(path) then
         name = mp.get_property_native('media-title')
-    else
-        rc = opensubtitles.search(path, out)
     end
+
+    rc = opensubtitles.search(path, out, name)
     if not rc then
         rc = subscene.search(path, out, name)
     end

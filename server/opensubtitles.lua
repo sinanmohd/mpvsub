@@ -134,11 +134,16 @@ local search_ohash = function (ohash)
 	end
 end
 
-local search = function (path, out)
+local search = function (path, out, name)
 	local ohash, link
 
-	ohash = util.opensubtitles_hash(path)
-	link = search_ohash(ohash)
+	if util.file_exists(path) then
+		ohash = util.opensubtitles_hash(path)
+		link = search_ohash(ohash)
+	else
+		name = name or util.string_vid_path_to_name(path)
+	end
+
 	if link then
 		return curl.zip_link_to_file(link, nil, out, tries)
 	end

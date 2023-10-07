@@ -11,6 +11,10 @@ local table_to_cmd = function (t)
 	return str
 end
 
+local file_exists = function (path)
+	return io.open(path, 'r') and true or false
+end
+
 local run = function (args)
 	local sig, rc, stdout, cmd
 
@@ -185,6 +189,7 @@ return {
 	zip_ext_first = zip_ext_first,
 	string_vid_path_to_name = string_vid_path_to_name,
 	opensubtitles_hash = opensubtitles_hash,
+	file_exists = file_exists,
 	run = run,
 	error = error,
 }
