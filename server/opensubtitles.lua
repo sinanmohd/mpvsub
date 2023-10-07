@@ -2,6 +2,7 @@
 
 local curl = require 'lib/curl'
 local util = require 'lib/util'
+local attr = require 'lib/attr'
 
 -- [[ languages supported by opensubtitles ]] --
 local languages = {
@@ -134,14 +135,94 @@ local search_ohash = function (ohash)
 	end
 end
 
-local search = function (path, out, name)
-	local ohash, link
+local ids_fetch = function (page)
+	local iter, no_name, line, id, name, tab
+
+	tab = {}
+	no_name = 0
+	iter = page:gmatch('[^\n\r]+')
+	while true do
+		line = iter()
+		if not line then
+			break
+		end
+
+		id = line:match('/en/subtitles/%d*')
+		if id then
+			id = id:match('%d+$')
+
+			line = iter() -- movie
+			if line:find('%.%.%.$') then
+				-- name cuts off...
+				name = line:gsub('"[^"]*$', '')
+				name = name:match('[^"]+$')
+			else
+				name = line:gsub('<br/><a rel.*$', '')
+				name = name:match('[^>]+$')
+			end
+
+			if not name then
+				line = iter()
+
+				if line:find('^%[S%d%dE%d%d%]$') then
+					-- it's a series
+					line = iter()
+					if line:find('%.%.%.$') then
+						name = line:gsub('^.*title="', '')
+						name = name:match('[^"]+')
+					else
+						name = line:match('[^<]+')
+					end
+				else
+					-- no name
+					name = tostring(no_name)
+					no_name = no_name + 1
+				end
+			end
+
+			tab[name] = id
+		end
+	end
+
+	return tab
+end
+
+local search_filesize = function (filesize, name)
+	local fetch, hcode, url, id, a
+
+	a = attr.build(name)
+
+	url = domain .. '/en' .. '/search/sublanguageid-' .. languages[language]
+	if a.season and a.episode then
+		url = url .. '/season-' .. a.season .. '/episode-' .. a.episode
+	end
+	url = url .. '/moviebytesize-' .. filesize
+
+	fetch, hcode = curl.get(url, nil, nil, tries)
+	if not hcode then
+		return nil
+	end
+
+	print(url)
+	util.table_print(ids_fetch(fetch))
+	id = attr.fuzzy(name, ids_fetch(fetch))
+	if id then
+		print(domain .. '/en/subtitleserve/sub/' .. id)
+		return domain .. '/en/subtitleserve/sub/' .. id
+	end
+end
+
+local search = function (path, out, info)
+	local ohash, link, name
 
 	if util.file_exists(path) then
 		ohash = util.opensubtitles_hash(path)
 		link = search_ohash(ohash)
-	else
-		name = name or util.string_vid_path_to_name(path)
+	end
+
+	if not link then
+		name = info.name or util.string_vid_path_to_name(path)
+		link = search_filesize(info.filesize, name)
 	end
 
 	if link then
@@ -151,5 +232,6 @@ end
 
 return {
 	search_ohash = search_ohash,
+	search_filesize = search_filesize,
 	search = search
 }

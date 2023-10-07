@@ -70,6 +70,16 @@ local array_merge = function (a1, a2)
 	return a
 end
 
+local array_search = function (a, key)
+	for _, v in pairs(a) do
+		if v == key then
+			return true
+		end
+	end
+
+	return false
+end
+
 local table_print = function (t)
 	for k, v in pairs(t) do
 		print( '|'.. k .. '=' .. v .. '|')
@@ -186,6 +196,7 @@ return {
 	table_print = table_print,
 	table_match_or_any = table_match_or_any,
 	array_merge = array_merge,
+	array_search = array_search,
 	zip_ext_first = zip_ext_first,
 	string_vid_path_to_name = string_vid_path_to_name,
 	opensubtitles_hash = opensubtitles_hash,

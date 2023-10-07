@@ -42,7 +42,7 @@ local sub_needed = function ()
 end
 
 local sub_setup = function ()
-    local out, name, path, rc
+    local out, name, path, rc, filesize
 
     mp.osd_message('fetching subtitle')
 
@@ -61,8 +61,12 @@ local sub_setup = function ()
     if not util.file_exists(path) then
         name = mp.get_property_native('media-title')
     end
+    filesize = mp.get_property_native('file-size')
 
-    rc = opensubtitles.search(path, out, name)
+    rc = opensubtitles.search(path, out, {
+        name = name,
+        filesize = filesize
+    })
     if not rc then
         rc = subscene.search(path, out, name)
     end
