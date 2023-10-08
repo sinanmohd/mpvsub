@@ -32,6 +32,8 @@ local build_dlim = function (name, attrs)
 	}
 	local series = {
 		'[Ss]%d%d?' .. dlim .. '[Ee]%d%d?',
+		'[Ss]%d%d?' .. dlim .. '[Ee][Pp]' .. dlim .. '%d%d?',
+		'Season' .. dlim .. '%d%d?' .. dlim .. 'Episode' .. dlim .. '%d%d?'
 	}
 	local sizes = {
 		'%d%d%d' .. dlim .. '[Mm][Bb]',
@@ -171,9 +173,9 @@ local weigh = function (a1, a2)
 	local key_score, score
 
 	key_score = {
-		name = 10,
-		season = 10,
-		episode = 10,
+		season = 15,
+		episode = 15,
+		title = 10,
 		source = 7,
 		scene = 5,
 		vcodec = 3,
@@ -184,15 +186,19 @@ local weigh = function (a1, a2)
 
 	score = 0
 	for k, v in pairs(a1) do
-		if not a2[k] then
+		if not a2[k] or k == 'episode' then
 			goto continue
 		end
 
-		if k == 'name' then
-			for _, name in pairs(v) do
-				if util.array_search(a2.name, name) then
-					score = score + key_score.name
+		if k == 'title' then
+			for _, title in pairs(v) do
+				if util.array_search(a2.title, title) then
+					score = score + key_score.title
 				end
+			end
+		elseif k == 'season' then
+			if a1.season == a2.season and a1.episode == a2.episode then
+				score = score + key_score.season + key_score.episode
 			end
 		else
 			if v == a2[k] then

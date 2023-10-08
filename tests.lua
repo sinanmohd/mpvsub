@@ -28,11 +28,12 @@ local test_subscene = function ()
 end
 
 local test_opensubtitles = function ()
-    local ohash, id, new_id
+    local ohash, name, id, new_id
 
     ohash = '395787dbe5b42001'
+    name = 'Fight.Club.1999.REMASTERED.720p.BRRip.XviD.AC3-RARBG'
     id = '5449593'
-    new_id = opensubtitles.search_ohash(ohash)
+    new_id = opensubtitles.search_ohash(ohash, name)
     if new_id then
         new_id = new_id:match('%d*$')
     end

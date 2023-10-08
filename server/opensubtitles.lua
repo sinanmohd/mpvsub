@@ -114,27 +114,6 @@ local language = 'english'
 local domain = 'https://www.opensubtitles.org'
 local tries = 10
 
-local search_ohash = function (ohash)
-	local fetch, hcode, url, id
-
-	url = domain .. '/en' .. '/search/sublanguageid-' ..
-	      languages[language] .. '/moviehash-' .. ohash
-	fetch, hcode = curl.get(url, nil, nil, tries)
-
-	id = fetch:match('/en/subtitleserve/sub/[^\n]*\n[^\n]*iduser%-0')
-	if id then
-		id = id:match('/en/subtitleserve/sub/%d*')
-	end
-
-	if hcode and not id then
-		util.error('opensubtitles: search_ohash')
-	end
-
-	if id then
-		return domain .. id
-	end
-end
-
 local ids_fetch = function (page)
 	local iter, no_name, line, id, name, tab
 
@@ -187,6 +166,23 @@ local ids_fetch = function (page)
 	return tab
 end
 
+local search_ohash = function (ohash, name)
+	local fetch, hcode, url, id
+
+	url = domain .. '/en' .. '/search/sublanguageid-' ..
+	      languages[language] .. '/moviehash-' .. ohash
+	fetch, hcode = curl.get(url, nil, nil, tries)
+
+	id = attr.fuzzy(name, ids_fetch(fetch))
+	if hcode and not id then
+		util.error('opensubtitles: search_ohash')
+	end
+
+	if id then
+		return domain .. '/en/subtitleserve/sub/' .. id
+	end
+end
+
 local search_filesize = function (filesize, name)
 	local fetch, hcode, url, id, a
 
@@ -203,11 +199,8 @@ local search_filesize = function (filesize, name)
 		return nil
 	end
 
-	print(url)
-	util.table_print(ids_fetch(fetch))
 	id = attr.fuzzy(name, ids_fetch(fetch))
 	if id then
-		print(domain .. '/en/subtitleserve/sub/' .. id)
 		return domain .. '/en/subtitleserve/sub/' .. id
 	end
 end
@@ -215,13 +208,12 @@ end
 local search = function (path, out, info)
 	local ohash, link, name
 
+	name = info.name or util.string_vid_path_to_name(path)
 	if util.file_exists(path) then
 		ohash = util.opensubtitles_hash(path)
-		link = search_ohash(ohash)
+		link = search_ohash(ohash, name)
 	end
-
 	if not link then
-		name = info.name or util.string_vid_path_to_name(path)
 		link = search_filesize(info.filesize, name)
 	end
 
