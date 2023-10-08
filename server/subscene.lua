@@ -2,6 +2,7 @@
 
 local curl = require 'lib/curl'
 local util = require 'lib/util'
+local attr = require 'lib/attr'
 
 -- [[ languages supported by subscene ]] --
 local languages = {
@@ -161,16 +162,15 @@ local link_fetch = function (id)
 end
 
 local search = function (path, out, name)
-	local title, id, link, rc, key
+	local title, id, link, rc
 
-	key = name or util.string_vid_path_to_name(path)
-	title, rc = title_search(key)
+	name = name or util.string_vid_path_to_name(path)
+	title, rc = title_search(name)
 	if not rc then
 		return false
 	end
 
-	id = id_fetch(title)
-	id = util.table_match_or_any(id, key)
+	id = attr.fuzzy(name, id_fetch(title))
 	if not id then
 		return false
 	end
