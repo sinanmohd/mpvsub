@@ -8,7 +8,8 @@ Features
 --------
 
 * no api keys or accounts needed
-* search uses file hash by default, and text as fallback
+* search uses file hash by default
+* intelligent purpose made fuzzy search algorithm
 * standalone implementation (minimal dependencies)
 * works with webtorrent
 
