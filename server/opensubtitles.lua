@@ -175,7 +175,7 @@ local search_ohash = function (ohash, name)
 
 	id = attr.fuzzy(name, ids_fetch(fetch))
 	if hcode and not id then
-		util.error('opensubtitles: search_ohash')
+		util.error('opensubtitles: search_ohash failed')
 	end
 
 	if id then
@@ -200,6 +200,10 @@ local search_filesize = function (filesize, name)
 	end
 
 	id = attr.fuzzy(name, ids_fetch(fetch))
+	if hcode and not id then
+		util.error('opensubtitles: search_filesize failed')
+	end
+
 	if id then
 		return domain .. '/en/subtitleserve/sub/' .. id
 	end
