@@ -34,11 +34,8 @@ local sub_needed = function ()
             isvideo = true
         end
     end
-    if not isvideo then
-        return false
-    end
 
-    return true
+    return isvideo
 end
 
 local sub_setup = function ()
