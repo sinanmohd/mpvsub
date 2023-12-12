@@ -1,8 +1,8 @@
 #!/usr/bin/env lua
 
-local curl = require 'lib/curl'
-local util = require 'lib/util'
-local attr = require 'lib/attr'
+local curl = require 'lib.curl'
+local util = require 'lib.util'
+local attr = require 'lib.attr'
 
 -- [[ languages supported by subscene ]] --
 local languages = {

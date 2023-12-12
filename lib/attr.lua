@@ -1,6 +1,6 @@
 #!/usr/bin/env lua
 
-local util = require 'lib/util'
+local util = require 'lib.util'
 
 local extract = function (name, patterns)
 	local r

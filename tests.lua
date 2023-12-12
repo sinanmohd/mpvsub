@@ -1,8 +1,8 @@
 #!/usr/bin/env lua
 
-local subscene = require 'server/subscene'
-local opensubtitles = require 'server/opensubtitles'
-local util = require 'lib/util'
+local subscene = require 'server.subscene'
+local opensubtitles = require 'server.opensubtitles'
+local util = require 'lib.util'
 
 local errs = 0
 
