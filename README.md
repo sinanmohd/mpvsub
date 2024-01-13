@@ -1,5 +1,5 @@
-**MpvSUB: /comfy/ subtitles for mpv without api keys or python**
-----------------------------------------------------------------
+**MpvSUB: /comfy/ subtitles for mpv**
+-------------------------------------
 
 mpvsub automatically fetches subtitles "when needed" with zero interactions
 from the user.
@@ -9,14 +9,13 @@ Features
 
 * no api keys or accounts needed
 * search uses file hash by default
-* intelligent purpose made fuzzy search algorithm
-* standalone implementation (minimal dependencies)
+* purpose made fuzzy search (accurate results)
+* native implementation (minimal dependencies)
 * works with webtorrent
 
 Installation
 ------------
 
-    $ mkdir -p ~/.config/mpv/scripts/mpvsub
     $ git clone https://git.sinanmohd.com/mpvsub ~/.config/mpv/scripts/mpvsub
 
 Dependencies
@@ -28,6 +27,6 @@ Dependencies
 Contact
 -------
 
-* matrix: `#chat:sinanmohd.com`
+* matrix: [#chat:sinanmohd.com](https://matrix.to/#/#chat:sinanmohd.com)
 
 you can also use email `sinan@firemail.cc` but matrix is preferred
