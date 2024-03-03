@@ -1,5 +1,5 @@
-**MpvSUB: /comfy/ subtitles for mpv**
--------------------------------------
+MpvSUB: /comfy/ subtitles for mpv
+---------------------------------
 
 mpvsub automatically fetches subtitles "when needed" with zero interactions
 from the user.
@@ -23,6 +23,17 @@ Dependencies
 
 * curl
 * unzip
+
+TODO
+----
+- [ ] use language from slang and fall back to english
+- [ ] deprecate subscene (unreliable servers and poor db)
+- [ ] add key binding to force subtitle lookup
+- [ ] implement text search on all severs
+- [ ] remove the default retries
+- [ ] shill on reddit and matrix
+- [ ] first fetch normally when key is pressed then bring up a menu to select subs(we likely got it wrong)
+- [ ] remove this todo
 
 Contact
 -------
