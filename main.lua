@@ -24,7 +24,7 @@ local sub_needed = function ()
     duration = mp.get_property('duration')
     if not duration or tonumber(duration) < 900 then
         return false
-    end -- ensure duration is less than 15 minutes
+    end -- ensure duration is more than 15 minutes
 
     for _, v in pairs(mp.get_property_native('track-list')) do
         if v['type'] == 'sub' then
