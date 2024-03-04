@@ -5,7 +5,6 @@ local util = require 'lib.util'
 local attr = require 'lib.attr'
 
 local domain = 'https://www.opensubtitles.org'
-local tries = 10
 
 local ids_fetch = function (page)
 	local iter, no_name, line, id, name, tab
@@ -64,7 +63,7 @@ local search_ohash = function (ohash, name, lang)
 
 	url = domain .. '/en' .. '/search/sublanguageid-' .. lang ..
 	      '/moviehash-' .. ohash
-	fetch, hcode = curl.get(url, nil, nil, tries)
+	fetch, hcode = curl.get(url, nil, nil)
 
 	id = attr.fuzzy(name, ids_fetch(fetch))
 	if hcode and not id then
@@ -87,7 +86,7 @@ local search_filesize = function (filesize, name, lang)
 	end
 	url = url .. '/moviebytesize-' .. filesize
 
-	fetch, hcode = curl.get(url, nil, nil, tries)
+	fetch, hcode = curl.get(url, nil, nil)
 	if not hcode then
 		return nil
 	end
@@ -117,7 +116,7 @@ local search = function (path, out, info)
 	end
 
 	if link then
-		return curl.zip_link_to_file(link, nil, out, tries)
+		return curl.zip_link_to_file(link, nil, out)
 	end
 end
 
