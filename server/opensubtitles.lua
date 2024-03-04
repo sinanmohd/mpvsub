@@ -4,113 +4,6 @@ local curl = require 'lib.curl'
 local util = require 'lib.util'
 local attr = require 'lib.attr'
 
--- [[ languages supported by opensubtitles ]] --
-local languages = {
-	['english'] = 'eng',
-	['abkhazian'] = 'abk',
-	['afrikaans'] = 'afr',
-	['albanian'] = 'alb',
-	['arabic'] = 'ara',
-	['aragonese'] = 'arg',
-	['armenian'] = 'arm',
-	['assamese'] = 'asm',
-	['asturian'] = 'ast',
-	['azerbaijani'] = 'aze',
-	['basque'] = 'baq',
-	['belarusian'] = 'bel',
-	['bengali'] = 'ben',
-	['bosnian'] = 'bos',
-	['breton'] = 'bre',
-	['bulgarian'] = 'bul',
-	['burmese'] = 'bur',
-	['catalan'] = 'cat',
-	['chinese (simplified)'] = 'chi',
-	['chinese (traditional)'] = 'zht',
-	['chinese bilingual'] = 'zhe',
-	['croatian'] = 'hrv',
-	['czech'] = 'cze',
-	['danish'] = 'dan',
-	['dari'] = 'prs',
-	['dutch'] = 'dut',
-	['esperanto'] = 'epo',
-	['estonian'] = 'est',
-	['extremaduran'] = 'ext',
-	['finnish'] = 'fin',
-	['french'] = 'fre',
-	['gaelic'] = 'gla',
-	['galician'] = 'glg',
-	['georgian'] = 'geo',
-	['german'] = 'ger',
-	['greek'] = 'ell',
-	['hebrew'] = 'heb',
-	['hindi'] = 'hin',
-	['hungarian'] = 'hun',
-	['icelandic'] = 'ice',
-	['igbo'] = 'ibo',
-	['indonesian'] = 'ind',
-	['interlingua'] = 'ina',
-	['irish'] = 'gle',
-	['italian'] = 'ita',
-	['japanese'] = 'jpn',
-	['kannada'] = 'kan',
-	['kazakh'] = 'kaz',
-	['khmer'] = 'khm',
-	['korean'] = 'kor',
-	['kurdish'] = 'kur',
-	['latvian'] = 'lav',
-	['lithuanian'] = 'lit',
-	['luxembourgish'] = 'ltz',
-	['macedonian'] = 'mac',
-	['malay'] = 'may',
-	['malayalam'] = 'mal',
-	['manipuri'] = 'mni',
-	['marathi'] = 'mar',
-	['mongolian'] = 'mon',
-	['montenegrin'] = 'mne',
-	['navajo'] = 'nav',
-	['nepali'] = 'nep',
-	['northern sami'] = 'sme',
-	['norwegian'] = 'nor',
-	['occitan'] = 'oci',
-	['odia'] = 'ori',
-	['persian'] = 'per',
-	['polish'] = 'pol',
-	['portuguese'] = 'por',
-	['portuguese (br)'] = 'pob',
-	['portuguese (mz)'] = 'pom',
-	['pushto'] = 'pus',
-	['romanian'] = 'rum',
-	['russian'] = 'rus',
-	['santali'] = 'sat',
-	['serbian'] = 'scc',
-	['sindhi'] = 'snd',
-	['sinhalese'] = 'sin',
-	['slovak'] = 'slo',
-	['slovenian'] = 'slv',
-	['somali'] = 'som',
-	['spanish'] = 'spa',
-	['spanish (eu)'] = 'spn',
-	['spanish (la)'] = 'spl',
-	['swahili'] = 'swa',
-	['swedish'] = 'swe',
-	['syriac'] = 'syr',
-	['tagalog'] = 'tgl',
-	['tamil'] = 'tam',
-	['tatar'] = 'tat',
-	['telugu'] = 'tel',
-	['thai'] = 'tha',
-	['toki pona'] = 'tok',
-	['turkish'] = 'tur',
-	['turkmen'] = 'tuk',
-	['ukrainian'] = 'ukr',
-	['urdu'] = 'urd',
-	['uzbek'] = 'uzb',
-	['vietnamese'] = 'vie',
-	['welsh'] = 'wel',
-}
-
-
-local language = 'english'
 local domain = 'https://www.opensubtitles.org'
 local tries = 10
 
@@ -166,11 +59,11 @@ local ids_fetch = function (page)
 	return tab
 end
 
-local search_ohash = function (ohash, name)
+local search_ohash = function (ohash, name, lang)
 	local fetch, hcode, url, id
 
-	url = domain .. '/en' .. '/search/sublanguageid-' ..
-	      languages[language] .. '/moviehash-' .. ohash
+	url = domain .. '/en' .. '/search/sublanguageid-' .. lang ..
+	      '/moviehash-' .. ohash
 	fetch, hcode = curl.get(url, nil, nil, tries)
 
 	id = attr.fuzzy(name, ids_fetch(fetch))
@@ -183,12 +76,12 @@ local search_ohash = function (ohash, name)
 	end
 end
 
-local search_filesize = function (filesize, name)
+local search_filesize = function (filesize, name, lang)
 	local fetch, hcode, url, id, a
 
 	a = attr.build(name)
 
-	url = domain .. '/en' .. '/search/sublanguageid-' .. languages[language]
+	url = domain .. '/en' .. '/search/sublanguageid-' .. lang
 	if a.season and a.episode then
 		url = url .. '/season-' .. a.season .. '/episode-' .. a.episode
 	end
@@ -210,15 +103,17 @@ local search_filesize = function (filesize, name)
 end
 
 local search = function (path, out, info)
-	local ohash, link, name
+	local ohash, link, name, lang
 
+	lang = info.iso639_2_lang or 'eng'
 	name = info.name or util.string_vid_path_to_name(path)
+
 	if util.file_exists(path) then
 		ohash = util.opensubtitles_hash(path)
-		link = search_ohash(ohash, name)
+		link = search_ohash(ohash, name, lang)
 	end
 	if not link then
-		link = search_filesize(info.filesize, name)
+		link = search_filesize(info.filesize, name, lang)
 	end
 
 	if link then

@@ -1,6 +1,13 @@
 local mutil = require 'mp.utils'
 local util = require 'lib.util'
+local iso639 = require 'lib.iso639'
 local opensubtitles = require 'server.opensubtitles'
+
+local default_lang = 'eng'
+
+local note = function (str)
+    mp.osd_message('mpvsub: ' .. str)
+end
 
 local mkdir = function (path)
     local info = mutil.file_info(path)
@@ -37,10 +44,29 @@ local sub_needed = function ()
     return isvideo
 end
 
-local sub_setup = function ()
-    local out, name, path, rc, filesize
+local getslang = function ()
+    local sslang = {}
+    local slang = mp.get_property_native('slang')
 
-    mp.osd_message('fetching subtitle')
+
+    for i = 1, #slang do
+        local lang = iso639.toset2(slang[i])
+        if lang then
+            table.insert(sslang, lang)
+        end
+    end
+
+    if #sslang < 1 then
+        slang.insert(default_lang)
+    end
+
+    return sslang
+end
+
+local sub_setup = function ()
+    local out, name, path, r, filesize, slangs, i
+
+    note('fetching subtitle')
 
     out = mp.get_property_native('sub-file-paths')[1]
     if out then
@@ -59,17 +85,25 @@ local sub_setup = function ()
     end
     filesize = mp.get_property_native('file-size')
 
-    rc = opensubtitles.search(path, out, {
-        name = name,
-        filesize = filesize
-    })
+    i = 1
+    slangs = getslang()
+    repeat
+        r = opensubtitles.search(path, out, {
+            name = name,
+            filesize = filesize,
+            iso639_2_lang = slangs[i],
+        })
 
-    if rc then
+        i = i + 1
+    until r or i > #slangs
+
+    if r then
         mp.commandv('rescan_external_files')
         mp.set_property('sid', 1)
-        mp.osd_message('fetch success')
+
+        mp.osd_message('fetched ' .. slangs[i - 1] .. ' subtitles')
     else
-        mp.osd_message('fetch failure')
+        note('failed to fetch subtitles')
     end
 end
 

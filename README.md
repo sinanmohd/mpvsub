@@ -26,7 +26,7 @@ Dependencies
 
 TODO
 ----
-- [ ] use language from slang and fall back to english
+- [x] use language from slang and fall back to english
 - [x] deprecate subscene (unreliable servers and poor db)
 - [x] add key binding to force subtitle lookup
 - [ ] implement text search on all severs
