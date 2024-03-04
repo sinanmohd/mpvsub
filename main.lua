@@ -1,6 +1,5 @@
 local mutil = require 'mp.utils'
 local util = require 'lib.util'
-local subscene = require 'server.subscene'
 local opensubtitles = require 'server.opensubtitles'
 
 local mkdir = function (path)
@@ -64,9 +63,6 @@ local sub_setup = function ()
         name = name,
         filesize = filesize
     })
-    if not rc then
-        rc = subscene.search(path, out, name)
-    end
 
     if rc then
         mp.commandv('rescan_external_files')
