@@ -99,8 +99,6 @@ local sub_setup = function ()
 
     if r then
         mp.commandv('rescan_external_files')
-        mp.set_property('sid', 1)
-
         mp.osd_message('fetched ' .. slangs[i - 1] .. ' subtitles')
     else
         note('failed to fetch subtitles')
