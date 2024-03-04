@@ -80,3 +80,4 @@ local file_listener = function ()
 end
 
 mp.register_event('file-loaded', file_listener)
+mp.add_key_binding('b', "mpvsub", sub_setup)

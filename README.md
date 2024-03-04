@@ -28,7 +28,7 @@ TODO
 ----
 - [ ] use language from slang and fall back to english
 - [x] deprecate subscene (unreliable servers and poor db)
-- [ ] add key binding to force subtitle lookup
+- [x] add key binding to force subtitle lookup
 - [ ] implement text search on all severs
 - [ ] remove the default retries
 - [ ] shill on reddit and matrix
