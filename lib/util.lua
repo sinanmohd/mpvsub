@@ -1,26 +1,26 @@
 #!/usr/bin/env lua
 
-local table_to_cmd = function (t)
+local table_to_cmd = function(t)
 	local str = ""
 
 	for _, v in ipairs(t) do
-		v = v:gsub("'", "\'")
+		v = v:gsub("'", "'")
 		str = str .. " '" .. v .. "' "
 	end
 
 	return str
 end
 
-local file_exists = function (path)
-	return io.open(path, 'r') and true or false
+local file_exists = function(path)
+	return io.open(path, "r") and true or false
 end
 
-local run = function (args)
+local run = function(args)
 	local sig, rc, stdout, cmd
 
 	if mp then
 		cmd = mp.command_native({
-			name = 'subprocess',
+			name = "subprocess",
 			capture_stdout = true,
 			args = args,
 		})
@@ -31,16 +31,16 @@ local run = function (args)
 	else
 		cmd = io.popen(table_to_cmd(args))
 		if cmd then
-			stdout = cmd:read('*all')
+			stdout = cmd:read("*all")
 			_, sig, rc = cmd:close()
-			rc = (sig == 'signal') or (sig == 'exit' and rc == 0)
+			rc = (sig == "signal") or (sig == "exit" and rc == 0)
 		end
 	end
 
 	return stdout or "", rc
 end
 
-local table_merge = function (t1, t2)
+local table_merge = function(t1, t2)
 	local t = {}
 	t1 = t1 or {}
 	t2 = t2 or {}
@@ -55,7 +55,7 @@ local table_merge = function (t1, t2)
 	return t
 end
 
-local array_merge = function (a1, a2)
+local array_merge = function(a1, a2)
 	local a = {}
 	a1 = a1 or {}
 	a2 = a2 or {}
@@ -70,7 +70,7 @@ local array_merge = function (a1, a2)
 	return a
 end
 
-local array_search = function (a, key)
+local array_search = function(a, key)
 	for _, v in pairs(a) do
 		if v == key then
 			return true
@@ -80,16 +80,16 @@ local array_search = function (a, key)
 	return false
 end
 
-local table_print = function (t)
+local table_print = function(t)
 	for k, v in pairs(t) do
-		print( '|'.. k .. '=' .. v .. '|')
+		print("|" .. k .. "=" .. v .. "|")
 	end
 end
 
-local table_match_or_any = function (t, key)
+local table_match_or_any = function(t, key)
 	local str
 
-	str= t[key]
+	str = t[key]
 	if not str then
 		_, str = next(t, nil)
 	end
@@ -97,22 +97,22 @@ local table_match_or_any = function (t, key)
 	return str
 end
 
-local zip_ext_first = function (zip, out)
+local zip_ext_first = function(zip, out)
 	local dir, rc, srt, findcmd
 
 	dir = os.tmpname()
 	os.remove(dir)
-	findcmd = { 'find', dir, '-type', 'f', '-name', '*.srt' }
+	findcmd = { "find", dir, "-type", "f", "-name", "*.srt" }
 
-	_, rc = run({ 'unzip',  '-qq',  zip, '-d',  dir })
-	srt = run(findcmd):match('[^\n]*')
-	run({ 'mv', srt, out })
+	_, rc = run({ "unzip", "-qq", zip, "-d", dir })
+	srt = run(findcmd):match("[^\n]*")
+	run({ "mv", srt, out })
 	os.remove(dir)
 
 	return rc
 end
 
-local string_vid_path_to_name = function (str)
+local string_vid_path_to_name = function(str)
 	local extensions = {
 		"mkv",
 		"mp4",
@@ -122,19 +122,19 @@ local string_vid_path_to_name = function (str)
 		"gifv",
 		"avi",
 		"mpeg",
-		"3gp"
+		"3gp",
 	}
 
-	str = str:match('[^/]*$')
+	str = str:match("[^/]*$")
 	for _, ext in ipairs(extensions) do
-		str = str:gsub('.' .. ext, '')
+		str = str:gsub("." .. ext, "")
 	end
 
 	return str
 end
 
-local error = function (str)
-	str = 'error: ' .. str
+local error = function(str)
+	str = "error: " .. str
 	if mp then
 		mp.msg.warn(str)
 	else
@@ -142,7 +142,7 @@ local error = function (str)
 	end
 end
 
-local opensubtitles_hash = function (fileName)
+local opensubtitles_hash = function(fileName)
 	local fil = io.open(fileName, "rb")
 	if not fil then
 		return nil

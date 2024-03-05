@@ -1,64 +1,64 @@
 #!/usr/bin/env lua
 
-local util = require 'lib.util'
+local util = require("lib.util")
 
-local extract = function (name, patterns)
+local extract = function(name, patterns)
 	local r
 
 	for _, p in pairs(patterns) do
 		r = r or name:match(p)
-		name = name:gsub(p, '')
+		name = name:gsub(p, "")
 	end
 
 	return name, r
 end
 
-local build_dlim = function (name, attrs)
-	local dlim ,r
+local build_dlim = function(name, attrs)
+	local dlim, r
 
 	attrs = attrs or {}
-	dlim = '[%-%.%s]?'
+	dlim = "[%-%.%s]?"
 	local vcodecs = {
-		'[M]m[Pp][Ee][Gg]' .. dlim .. '[1234]',
+		"[M]m[Pp][Ee][Gg]" .. dlim .. "[1234]",
 	}
 	local acodecs = {
-		'[Dd][Tt][Ss]' .. dlim .. '[Hh][Dd]',
-		'[Dd][Dd]' .. dlim .. '[57]%.1',
+		"[Dd][Tt][Ss]" .. dlim .. "[Hh][Dd]",
+		"[Dd][Dd]" .. dlim .. "[57]%.1",
 	}
-	local sources= {
+	local sources = {
 		"[Ww][Ee][Bb]" .. dlim .. "[Dd][Ll]",
 		"[Hh][Dd]" .. dlim .. "[Tt][Vv]",
 		"[Hh][Dd]" .. dlim .. "[Tt][Ss]",
 	}
 	local series = {
-		'[Ss]%d%d?' .. dlim .. '[Ee]%d%d?',
-		'[Ss]%d%d?' .. dlim .. '[Ee][Pp]' .. dlim .. '%d%d?',
-		'Season' .. dlim .. '%d%d?' .. dlim .. 'Episode' .. dlim .. '%d%d?'
+		"[Ss]%d%d?" .. dlim .. "[Ee]%d%d?",
+		"[Ss]%d%d?" .. dlim .. "[Ee][Pp]" .. dlim .. "%d%d?",
+		"Season" .. dlim .. "%d%d?" .. dlim .. "Episode" .. dlim .. "%d%d?",
 	}
 	local sizes = {
-		'%d%d%d' .. dlim .. '[Mm][Bb]',
-		'%d%d?%.%d%d?' ..  dlim .. '[Gg][Bb]',
+		"%d%d%d" .. dlim .. "[Mm][Bb]",
+		"%d%d?%.%d%d?" .. dlim .. "[Gg][Bb]",
 	}
 	local depths = {
-		'1[02]' .. dlim .. '[Bb][Ii][Tt]'
+		"1[02]" .. dlim .. "[Bb][Ii][Tt]",
 	}
 
 	name, attrs.vcodec = extract(name, vcodecs)
 	name, attrs.source = extract(name, sources)
-	name, attrs.acodecs  = extract(name, acodecs)
-	name, attrs.size  = extract(name, sizes)
-	name, attrs.depth  = extract(name, depths)
+	name, attrs.acodecs = extract(name, acodecs)
+	name, attrs.size = extract(name, sizes)
+	name, attrs.depth = extract(name, depths)
 
 	name, r = extract(name, series)
 	if r then
-		attrs.season = tonumber(r:match('%d+'))
-		attrs.episode = tonumber(r:match('%d+$'))
+		attrs.season = tonumber(r:match("%d+"))
+		attrs.episode = tonumber(r:match("%d+$"))
 	end
 
 	return name, attrs
 end
 
-local build_atom = function (name, attrs)
+local build_atom = function(name, attrs)
 	local r, year
 
 	attrs = attrs or {}
@@ -75,7 +75,7 @@ local build_atom = function (name, attrs)
 		"[Ee]?[Aa][Cc]3",
 		"[Dd][Tt][Ss]",
 	}
-	local sources= {
+	local sources = {
 		"[Bb][Ll][Uu][Rr][Aa][Yy]",
 		"[Bb][Rr][Rr][Ii][Pp]",
 		"[Dd][Vv][Dd][Rr][Ii][Pp]",
@@ -90,50 +90,50 @@ local build_atom = function (name, attrs)
 		"720[Pp]",
 		"480[Pp]",
 		"[Uu][Hh][Dd]",
-		"4[Kk]"
+		"4[Kk]",
 	}
 	local series = {
-		'%d%d[Xx]%d%d',
+		"%d%d[Xx]%d%d",
 	}
 	local channels = {
-		'6[Cc][Hh]',
-		'[57]%.1',
+		"6[Cc][Hh]",
+		"[57]%.1",
 	}
 
 	name, attrs.vcodec = extract(name, vcodecs)
 	name, attrs.source = extract(name, sources)
-	name, attrs.res  = extract(name, reses)
-	name, attrs.acodecs  = extract(name, acodecs)
-	name, attrs.channel  = extract(name, channels)
+	name, attrs.res = extract(name, reses)
+	name, attrs.acodecs = extract(name, acodecs)
+	name, attrs.channel = extract(name, channels)
 
 	name, r = extract(name, series)
 	if r then
-		attrs.season = tonumber(r:match('%d+'))
-		attrs.episode = tonumber(r:match('%d+$'))
+		attrs.season = tonumber(r:match("%d+"))
+		attrs.episode = tonumber(r:match("%d+$"))
 	end
 
-	for y in name:gmatch('%d%d%d%d') do
+	for y in name:gmatch("%d%d%d%d") do
 		year = tonumber(y)
-		if year > 1900 and year <= tonumber(os.date('%Y')) then
+		if year > 1900 and year <= tonumber(os.date("%Y")) then
 			attrs.year = y
 		end
 	end
-	if  attrs.year then
-		name = name:gsub(tostring(attrs.year), '')
+	if attrs.year then
+		name = name:gsub(tostring(attrs.year), "")
 	end
 
 	return name, attrs
 end
 
-local build_low = function (name, attrs)
+local build_low = function(name, attrs)
 	local low_attr, lows
 
-	lows = { 'SDH' }
+	lows = { "SDH" }
 
 	low_attr = {}
 	for _, low in pairs(lows) do
 		low_attr[#low_attr + 1] = name:match(low)
-		name = name:gsub(low, '')
+		name = name:gsub(low, "")
 	end
 
 	attrs = attrs or {}
@@ -144,9 +144,9 @@ local build_low = function (name, attrs)
 	return name, attrs
 end
 
-local build_title = function (name, attrs)
+local build_title = function(name, attrs)
 	attrs.title = {}
-	for w in name:gmatch('%w+') do
+	for w in name:gmatch("%w+") do
 		attrs.title[#attrs.title + 1] = w
 	end
 
@@ -158,7 +158,7 @@ local build_title = function (name, attrs)
 	return attrs
 end
 
-local build = function (name)
+local build = function(name)
 	local attrs = {}
 
 	name = build_dlim(name, attrs)
@@ -169,7 +169,7 @@ local build = function (name)
 	return attrs
 end
 
-local weigh = function (a1, a2)
+local weigh = function(a1, a2)
 	local key_score, score
 
 	key_score = {
@@ -186,17 +186,17 @@ local weigh = function (a1, a2)
 
 	score = 0
 	for k, v in pairs(a1) do
-		if not a2[k] or k == 'episode' then
+		if not a2[k] or k == "episode" then
 			goto continue
 		end
 
-		if k == 'title' then
+		if k == "title" then
 			for _, title in pairs(v) do
 				if util.array_search(a2.title, title) then
 					score = score + key_score.title
 				end
 			end
-		elseif k == 'season' then
+		elseif k == "season" then
 			if a1.season == a2.season and a1.episode == a2.episode then
 				score = score + key_score.season + key_score.episode
 			end
@@ -206,18 +206,18 @@ local weigh = function (a1, a2)
 			end
 		end
 
-	    ::continue::
+		::continue::
 	end
 
 	return score
 end
 
-local fuzzy = function (name, tab)
+local fuzzy = function(name, tab)
 	local name_attr, high, score
 
 	high = {
 		score = 0,
-		name = next(tab)
+		name = next(tab),
 	}
 
 	name_attr = build(name)
